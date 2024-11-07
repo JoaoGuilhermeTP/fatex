@@ -21,11 +21,11 @@ class RegistrationForm(FlaskForm):
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
         if user:
-            raise ValidationError('That username is taken. Please choose a different one.')
+            raise ValidationError('Já existe uma conta com este nome de usuário.')
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user:
-            raise ValidationError('That email is taken. Please choose a different one.')
+            raise ValidationError('Já existe uma conta registrada com este e-mail.')
     
     
 # Class for the login form
@@ -50,13 +50,13 @@ class UpdateAccountForm(FlaskForm):
         if username.data != current_user.username:
             user = User.query.filter_by(username=username.data).first()
             if user:
-                raise ValidationError('That username is taken. Please choose a different one.')
+                raise ValidationError('Já existe uma conta com este nome de usuário.')
     def validate_email(self, email):
         # If the user changes their email, query the database to see if the new email is already taken
         if email.data != current_user.email:
             user = User.query.filter_by(email=email.data).first()
             if user:
-                raise ValidationError('That email is taken. Please choose a different one.')   
+                raise ValidationError('Já existe uma conta registrada com este e-mail.')   
             
             
 class PostForm(FlaskForm):

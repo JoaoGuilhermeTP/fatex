@@ -10,9 +10,13 @@ from flask_login import login_user, current_user, logout_user, login_required
 
 @app.route("/")
 @app.route("/home")
+# Redirect user to the /login route if they are not logged in
 @login_required
 def home():
-    posts = Post.query.order_by(Post.date_posted.desc())
+    # Get the current page in pagination. Set default page to 1, and type to int
+    page = request.args.get('page', 1, type=int)
+    # Query database using pagination, show 5 posts per page
+    posts = Post.query.order_by(Post.date_posted.desc()).paginate(page = page, per_page=15)
     return render_template('home.html', posts = posts)
 
 
@@ -31,7 +35,7 @@ def register():
         user = User(username=form.username.data, email=form.email.data, password=hashed_password)
         db.session.add(user)
         db.session.commit()
-        flash(f'Your account has been created. You are now able to log in', 'success')
+        flash(f'Conta criada com sucesso. Você já pode realizar o login.', 'success')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
@@ -51,7 +55,7 @@ def login():
             else:
                 return redirect(url_for('home'))
         else:
-            flash('Login Unsuccessful. Please check email and password', 'danger')
+            flash('Usuário ou senha inválido(s). Por favor, verifique e tente novamente.', 'danger')
     return render_template('login.html', title='Login', form=form)
 
 
@@ -145,3 +149,21 @@ def delete_post(post_id):
     db.session.commit()
     flash('Seu post foi deletado com sucesso!', 'success')
     return redirect(url_for('home'))
+
+
+
+@app.route("/user/<string:username>")
+# Redirect user to the /login route if they are not logged in
+@login_required
+def user_posts(username):
+    # Get the current page in pagination. Set default page to 1, and type to int
+    page = request.args.get('page', 1, type=int)
+    # Get user
+    user = User.query.filter_by(username=username).first_or_404()
+    # Get posts by this user
+    posts = Post.query.filter_by(author=user)
+    # Order posts from newer to oldest
+    posts = posts.order_by(Post.date_posted.desc())
+    # Paginate posts
+    posts = posts.paginate(page=page, per_page=5)
+    return render_template('user_posts.html', posts = posts, user=user)

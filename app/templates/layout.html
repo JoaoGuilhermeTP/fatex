@@ -27,18 +27,17 @@
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
               <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>
-              <a class="nav-item nav-link" href="{{ url_for('about') }}">About</a>
+              <a class="nav-item nav-link" href="{{ url_for('about') }}">Sobre</a>
             </div>
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
               {% if current_user.is_authenticated %}
-                <strong class="nav-item nav-link">{{current_user.username}}</strong>
-                <a class="nav-item nav-link" href="{{ url_for('new_post') }}">New Post</a>
-                <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
-                <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
+                <strong><a class="nav-item nav-link" href="{{ url_for('account') }}">{{current_user.username}}</a></strong>
+                <a class="nav-item nav-link" href="{{ url_for('new_post') }}">Novo Post</a>
+                <a class="nav-item nav-link" href="{{ url_for('logout') }}">Sair</a>
               {% else %}
-                <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
-                <a class="nav-item nav-link" href="{{ url_for('register') }}">Register</a>
+                <a class="nav-item nav-link" href="{{ url_for('login') }}">Entrar</a>
+                <a class="nav-item nav-link" href="{{ url_for('register') }}">Cadastre-se</a>
               {% endif %}
             </div>
           </div>
@@ -57,7 +56,11 @@
               {% endfor %}
             {% endif %}
           {% endwith %}
-          {% block content %}{% endblock %}
+          {% block content %}
+
+                <!--- Child pages content goes here-->
+                
+          {% endblock %}
         </div>
         <div class="col-md-4">
           <div class="content-section">
