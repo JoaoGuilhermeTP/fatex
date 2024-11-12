@@ -17,17 +17,21 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password', validators = [DataRequired()])
     confirm_password = PasswordField('Confirm Password', validators = [DataRequired(), EqualTo('password')])
     submit = SubmitField('Sign Up')
-    
+
+
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
         if user:
             raise ValidationError('Já existe uma conta com este nome de usuário.')
+
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user:
             raise ValidationError('Já existe uma conta registrada com este e-mail.')
-    
-    
+        if not email.data.endswith('@fatec.sp.gov.br'):
+            raise ValidationError('O e-mail precisa terminar com @fatec.sp.gov.br.')
+
+
 # Class for the login form
 
 class LoginForm(FlaskForm):
@@ -35,8 +39,8 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators = [DataRequired()])
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
-    
-    
+
+
 # Class for the update profile form
 
 class UpdateAccountForm(FlaskForm):
@@ -44,7 +48,7 @@ class UpdateAccountForm(FlaskForm):
     email = StringField('Email', validators = [DataRequired(), Email()])
     picture = FileField('Update Profile Picture', validators = [FileAllowed(['jpg', 'png'])])
     submit = SubmitField('Update')
-    
+
     def validate_username(self, username):
         # If the user changes their username, query the database to see if the new username is already taken
         if username.data != current_user.username:
@@ -56,24 +60,24 @@ class UpdateAccountForm(FlaskForm):
         if email.data != current_user.email:
             user = User.query.filter_by(email=email.data).first()
             if user:
-                raise ValidationError('Já existe uma conta registrada com este e-mail.')   
-            
-            
+                raise ValidationError('Já existe uma conta registrada com este e-mail.')
+
+
 class PostForm(FlaskForm):
     title = StringField('Title', validators = [DataRequired()])
     content = TextAreaField('Content', validators = [DataRequired()])
     submit = SubmitField('Post')
-    
-    
+
+
 class RequestResetForm(FlaskForm):
     email = StringField('Email', validators = [DataRequired(), Email()])
     submit = SubmitField('Request Password Reset')
-    
+
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user is None:
-            raise ValidationError('Não existe uma conta com o e-mail informado. Você precisa se cadastrar.')  
-            
+            raise ValidationError('Não existe uma conta com o e-mail informado. Você precisa se cadastrar.')
+
 
 class ResetPasswordForm(FlaskForm):
     password = PasswordField('Password', validators = [DataRequired()])
