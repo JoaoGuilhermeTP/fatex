@@ -2,11 +2,11 @@ import os
 import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request,abort
-from app import app, db, bcrypt
-from app.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm # Import the form classes that we've created
+from app import app, db, bcrypt, mail
+from app.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, RequestResetForm, ResetPasswordForm  # Import the form classes that we've created
 from app.models import User, Post
 from flask_login import login_user, current_user, logout_user, login_required
-
+from flask_mail import Message
 
 @app.route("/")
 @app.route("/home")
@@ -167,3 +167,56 @@ def user_posts(username):
     # Paginate posts
     posts = posts.paginate(page=page, per_page=5)
     return render_template('user_posts.html', posts = posts, user=user)
+
+
+# Função para enviar e-mail de redefinição ao usuário
+# Recebe o usuário vindo de uma query no banco de dados
+def send_reset_email(user):
+    token = user.get_reset_token()
+    msg = Message('Password Reset Request',
+                  sender='fatex.adm@gmail.com',
+                  recipients=[user.email])
+    msg.body = f'''To reset your password, visit the following link:
+{url_for('reset_token', token=token, _external=True)}
+
+If you did not make this request then simply ignore this email and no changes will be made.
+'''
+    mail.send(msg)
+
+
+
+# Rota para solicitar reset de senha
+@app.route('/reset_password', methods=['GET', 'POST'])
+def reset_request():
+    # Se usuário estiver logado, redirecionar para página inicial
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = RequestResetForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        send_reset_email(user)
+        flash('Um e-mail foi enviado com as instruções para redefinir sua senha.', 'info')
+        return redirect(url_for('login'))
+    return render_template('reset_request.html', title='Reset Password', form=form)
+
+
+# Rota para resetar senha do usuário
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_token(token):
+    # Se usuário estiver logado, redirecionar para página inicial
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    # Se o token for válido, armazenar id do  (retornado pelo método "verify_reset_token") na variável "user"
+    user = User.verify_reset_token(token)
+    # Se token não for válido, exibir mensagem ao usuário
+    if not user:
+        flash('That is an inalid or expired token', 'warning')
+        return redirect(url_for('reset_request'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user.password = hashed_password
+        db.session.commit()
+        flash(f'Sua senha foi alterada com sucesso!.', 'success')
+        return redirect(url_for('login'))
+    return render_template('reset_token.html', title='Reset Password', form=form)
