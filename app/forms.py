@@ -12,11 +12,11 @@ from app.models import User
 # Class for the registration form
 
 class RegistrationForm(FlaskForm):
-    username = StringField('Username', validators = [DataRequired(), Length(min=2, max=20)])
+    username = StringField('Nome de Usuário', validators = [DataRequired(), Length(min=2, max=20)])
     email = StringField('Email', validators = [DataRequired(), Email()])
-    password = PasswordField('Password', validators = [DataRequired()])
-    confirm_password = PasswordField('Confirm Password', validators = [DataRequired(), EqualTo('password')])
-    submit = SubmitField('Sign Up')
+    password = PasswordField('Senha', validators = [DataRequired()])
+    confirm_password = PasswordField('Confirme a sua senha', validators = [DataRequired(), EqualTo('password')])
+    submit = SubmitField('Registrar-se')
 
 
     def validate_username(self, username):
@@ -35,19 +35,19 @@ class RegistrationForm(FlaskForm):
 # Class for the login form
 
 class LoginForm(FlaskForm):
-    email = StringField('Email', validators = [DataRequired(), Email()])
-    password = PasswordField('Password', validators = [DataRequired()])
-    remember = BooleanField('Remember Me')
+    email = StringField('E-mail', validators = [DataRequired(), Email()])
+    password = PasswordField('Senha', validators = [DataRequired()])
+    remember = BooleanField('Lembrar-se de mim')
     submit = SubmitField('Login')
 
 
 # Class for the update profile form
 
 class UpdateAccountForm(FlaskForm):
-    username = StringField('Username', validators = [DataRequired(), Length(min=2, max=20)])
-    email = StringField('Email', validators = [DataRequired(), Email()])
-    picture = FileField('Update Profile Picture', validators = [FileAllowed(['jpg', 'png'])])
-    submit = SubmitField('Update')
+    username = StringField('Nome de Usuário', validators = [DataRequired(), Length(min=2, max=20)])
+    email = StringField('E-mail', validators = [DataRequired(), Email()])
+    picture = FileField('Atualizar foto', validators = [FileAllowed(['jpg', 'png', 'jpeg'])])
+    submit = SubmitField('Atualizar')
 
     def validate_username(self, username):
         # If the user changes their username, query the database to see if the new username is already taken
@@ -64,14 +64,14 @@ class UpdateAccountForm(FlaskForm):
 
 
 class PostForm(FlaskForm):
-    title = StringField('Title', validators = [DataRequired()])
-    content = TextAreaField('Content', validators = [DataRequired()])
+    title = StringField('Título', validators = [DataRequired()])
+    content = TextAreaField('Conteúdo', validators = [DataRequired()])
     submit = SubmitField('Post')
 
 
 class RequestResetForm(FlaskForm):
-    email = StringField('Email', validators = [DataRequired(), Email()])
-    submit = SubmitField('Request Password Reset')
+    email = StringField('E-mail', validators = [DataRequired(), Email()])
+    submit = SubmitField('Solicitar redefinição de senha')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
@@ -80,6 +80,6 @@ class RequestResetForm(FlaskForm):
 
 
 class ResetPasswordForm(FlaskForm):
-    password = PasswordField('Password', validators = [DataRequired()])
-    confirm_password = PasswordField('Confirm Password', validators = [DataRequired(), EqualTo('password')])
-    submit = SubmitField('Reset Password')
+    password = PasswordField('Nova Senha', validators = [DataRequired()])
+    confirm_password = PasswordField('Confirmar Nova Senha', validators = [DataRequired(), EqualTo('password')])
+    submit = SubmitField('Enviar')

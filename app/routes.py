@@ -37,7 +37,7 @@ def register():
         db.session.commit()
         flash(f'Conta criada com sucesso. Você já pode realizar o login.', 'success')
         return redirect(url_for('login'))
-    return render_template('register.html', title='Register', form=form)
+    return render_template('register.html', title='Registre-se', form=form)
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -107,7 +107,7 @@ def new_post():
         db.session.commit()
         flash('O seu post foi criado com sucesso!', 'success')
         return redirect(url_for('home'))
-    return render_template('create_post.html', title='New Post', form=form, legend="New Post")
+    return render_template('create_post.html', title='Novo Post', form=form, legend="Novo Post")
 
 
 # Route that takes to the editing page of a specific post
@@ -197,7 +197,7 @@ def reset_request():
         send_reset_email(user)
         flash('Um e-mail foi enviado com as instruções para redefinir sua senha.', 'info')
         return redirect(url_for('login'))
-    return render_template('reset_request.html', title='Reset Password', form=form)
+    return render_template('reset_request.html', title='Redefinir Senha', legend='Redefinir Senha', form=form)
 
 
 # Rota para resetar senha do usuário
@@ -219,4 +219,4 @@ def reset_token(token):
         db.session.commit()
         flash(f'Sua senha foi alterada com sucesso!.', 'success')
         return redirect(url_for('login'))
-    return render_template('reset_token.html', title='Reset Password', form=form)
+    return render_template('reset_token.html', title='Redefinir Senha', form=form)

@@ -8,7 +8,7 @@
     <img class="rounded-circle article-img" src="{{url_for('static', filename='profile_pics/' + post.author.image_file)}}">
     <div class="media-body">
         <div class="article-metadata">
-            <a class="mr-2" href="{{url_for('user_posts', username=post.author.username)}}">{{ post.author.username }}</a>
+            <a class="mr-2" href="{{url_for('user_posts', username=post.author.username)}}">{{ post.author.username }} - {{post.author.email}}</a>
             <small class="text-muted">Postado em {{ post.date_posted.strftime('%d/%m/%Y às %H:%m:%S') }}</small>
         </div>
         <h2><a class="article-title" href="{{url_for('post', post_id=post.id)}}">{{ post.title }}</a></h2>
